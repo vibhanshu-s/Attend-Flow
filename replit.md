@@ -4,6 +4,15 @@
 
 TuitionTrack is a web-based tuition attendance management system designed for educational institutions. It provides session-based attendance tracking with visual analytics (heatmaps and percentages), supporting three distinct user roles: Admin (system owner who manages teachers, batches, and students), Teacher (marks and manages attendance for assigned batches), and Guardian (views their children's attendance records). The application is built as a mobile-first, responsive web app compatible with both mobile devices and desktop computers.
 
+## Recent Changes (January 2026)
+- Complete implementation of all three user role dashboards
+- Session-based attendance with PRESENT/ABSENT toggle buttons
+- Automatic session locking after midnight (configurable)
+- Fixed authentication flow with localStorage persistence and protected routes
+- Analytics heatmap visualization for attendance patterns
+- Leaderboard component showing top-performing students
+- All CRUD operations functional via in-memory storage
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
