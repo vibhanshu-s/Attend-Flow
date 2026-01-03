@@ -73,12 +73,15 @@ export async function registerRoutes(
       const data = loginTeacherSchema.parse(req.body);
       
       const teacher = await storage.getTeacherByTeacherId(data.teacherId);
-      if (!teacher || teacher.password !== data.password) {
-        return res.status(401).json({ message: "Invalid teacher ID or password" });
+      if (!teacher) {
+        return res.status(401).json({ message: "Teacher not found" });
       }
 
-      const { password, ...teacherWithoutPassword } = teacher;
-      res.json(teacherWithoutPassword);
+      res.json({
+        id: teacher.id,
+        teacherId: teacher.teacherId,
+        name: teacher.name,
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: error.errors[0].message });
@@ -90,8 +93,11 @@ export async function registerRoutes(
   app.get("/api/teachers", async (_req, res) => {
     try {
       const teachers = await storage.getAllTeachers();
-      const teachersWithoutPasswords = teachers.map(({ password, ...t }) => t);
-      res.json(teachersWithoutPasswords);
+      res.json(teachers.map(t => ({
+        id: t.id,
+        teacherId: t.teacherId,
+        name: t.name,
+      })));
     } catch (error) {
       res.status(500).json({ message: "Failed to get teachers" });
     }
@@ -106,9 +112,15 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Teacher ID already exists" });
       }
 
-      const teacher = await storage.createTeacher(data);
-      const { password, ...teacherWithoutPassword } = teacher;
-      res.json(teacherWithoutPassword);
+      const teacher = await storage.createTeacher({
+        teacherId: data.teacherId,
+        name: data.name,
+      });
+      res.json({
+        id: teacher.id,
+        teacherId: teacher.teacherId,
+        name: teacher.name,
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: error.errors[0].message });

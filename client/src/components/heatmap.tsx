@@ -40,8 +40,13 @@ function getStatusLabel(status: AttendanceStatus): string {
   }
 }
 
-export function Heatmap({ data, maxSessions = 100 }: HeatmapProps) {
+export function Heatmap({ data, maxSessions = 50 }: HeatmapProps) {
   const displayData = data.slice(0, maxSessions);
+  
+  const rows: HeatmapData[][] = [];
+  for (let i = 0; i < 5; i++) {
+    rows.push(displayData.slice(i * 10, (i + 1) * 10));
+  }
 
   if (displayData.length === 0) {
     return (
@@ -54,23 +59,33 @@ export function Heatmap({ data, maxSessions = 100 }: HeatmapProps) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-10 gap-1 md:gap-2">
-        {displayData.map((session, index) => (
-          <Tooltip key={session.sessionId || index}>
-            <TooltipTrigger asChild>
-              <div
-                className={`aspect-square w-8 h-8 md:w-10 md:h-10 rounded-md flex items-center justify-center cursor-pointer transition-transform hover:scale-105 ${getStatusColor(session.status)}`}
-                data-testid={`heatmap-cell-${index}`}
-              >
-                {getStatusIcon(session.status)}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-sm">
-              <div className="font-medium">{getStatusLabel(session.status)}</div>
-              <div className="text-muted-foreground">{session.date}</div>
-              <div className="text-muted-foreground">{session.time}</div>
-            </TooltipContent>
-          </Tooltip>
+      <div className="flex flex-col gap-1.5">
+        {rows.map((row, rowIndex) => (
+          <div key={rowIndex} className="flex gap-1.5">
+            {row.map((session, colIndex) => {
+              const cellIndex = rowIndex * 10 + colIndex;
+              return (
+                <Tooltip key={session.sessionId || cellIndex}>
+                  <TooltipTrigger asChild>
+                    <div
+                      className={`w-8 h-8 md:w-9 md:h-9 rounded-md flex items-center justify-center cursor-pointer transition-transform hover:scale-105 ${getStatusColor(session.status)}`}
+                      data-testid={`heatmap-cell-${cellIndex}`}
+                    >
+                      {getStatusIcon(session.status)}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-sm">
+                    <div className="font-medium">{getStatusLabel(session.status)}</div>
+                    <div className="text-muted-foreground">{session.date}</div>
+                    <div className="text-muted-foreground">{session.time}</div>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
+            {row.length < 10 && Array.from({ length: 10 - row.length }).map((_, i) => (
+              <div key={`empty-${rowIndex}-${i}`} className="w-8 h-8 md:w-9 md:h-9" />
+            ))}
+          </div>
         ))}
       </div>
 

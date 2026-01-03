@@ -1,0 +1,624 @@
+Act as a senior full-stack architect and product designer.
+Build a production-ready, scalable tuition attendance web application that works seamlessly on mobile and desktop.
+
+Tech Stack (MANDATORY)
+
+Frontend: React + Next.js (latest App Router)
+
+Styling: Tailwind CSS
+
+Backend: Next.js API routes
+
+Database: MongoDB (Mongoose)
+
+Auth:
+
+Admin: email + password
+
+Teacher: teacherId + password
+
+Guardian: mobile number only (no OTP)
+
+System Roles
+Admin
+
+Admin signs up first and becomes system owner
+
+Admin dashboard must allow:
+
+Create teachers
+
+Create batches
+
+Create students
+
+Assign teacher → multiple batches
+
+Assign student → batch
+
+Assign student → guardian mobile number
+
+Admin can override locked attendance if required
+
+Teacher
+
+Logs in using teacherId + password
+
+Can be assigned multiple batches
+
+Must select a batch before any action
+
+For each batch, teacher can:
+
+Create a new session (DRAFT)
+
+Mark attendance (Present / Absent)
+
+Finalize attendance
+
+Edit attendance until same-day midnight
+
+View batch analytics:
+
+Average attendance %
+
+Student-wise attendance %
+
+Top performers leaderboard (with minimum session threshold)
+
+Guardian
+
+Logs in using mobile number (no OTP)
+
+If mobile is linked to multiple students, show selection screen
+
+Can view for selected student:
+
+Total attendance percentage
+
+Session-wise attendance heatmap (last 100 sessions)
+
+Read-only access
+
+Attendance Rules
+
+Attendance is session-based (not daily)
+
+Each session belongs to exactly one batch
+
+Attendance states:
+
+Present (green)
+
+Absent (red)
+
+Not marked (grey)
+
+Attendance editable only on same day
+
+After midnight → session is LOCKED
+
+Heatmap UI
+
+Grid of boxes (1 box = 1 session)
+
+Show last 100 sessions
+
+Color-coded states
+
+Hover/tap shows date, time, status
+
+Accessible (icons + color)
+
+Database Design (MUST BE ROBUST)
+
+Use MongoDB with Mongoose schemas
+
+Collections:
+
+Admin
+
+Teacher
+
+Batch
+
+Student
+
+Session
+
+Attendance
+
+Use proper references and indexing
+
+Data must persist reliably and never be lost
+
+UI/UX Requirements
+
+Mobile-first responsive design
+
+Clean dashboards for each role
+
+Clear batch context everywhere
+
+Reuse components (especially heatmap)
+
+Fast load, scalable structure
+
+Deliverables
+
+Full database schema
+
+API routes
+
+Authentication logic
+
+Frontend pages & layouts
+
+Reusable components
+
+Clean folder structure
+
+Scalable architecture
+
+Build this as a real-world production system, not a demo or toy app.
+
+✅ Final Verdict (Honest)
+
+What you’ve designed:
+
+Is simple
+
+Is scalable
+
+Matches real tuition workflows
+
+Avoids unnecessary complexity
+
+Can be built incrementally
+
+This is startup-quality system design, not a college project.
+
+If you want next:
+
+I can review the generated code
+
+Or help you phase it into MVP → v2
+
+Or design deployment + backups
+
+Just say the word.
+
+fix not showing attendance for guardian
+make ui seamless and make it for mobile
+remove 5 sessions for leaderboard result should reflect immediately
+use heatmap for attendance and use 50 blocks in 5 rows and 10 columns
+apply changes on attendance when published and allow 12hours to edit it (by teacher or admin can)
+remove password for teacher instead use drop down list
+with name and teacher id
+
+
+Perfect — these are clean, simplifying changes that actually make the app more usable for a small tuition. I’ll do exactly what you asked:
+
+Summarize the complete UPDATED pipeline (fixed + simplified)
+
+Give you a revised, perfectly engineered master prompt
+incorporating all your changes
+(mobile-first, seamless UI, React + Next.js + MongoDB, no data loss)
+
+No code, no fluff.
+
+PART 1 — FINAL UPDATED PIPELINE (AFTER ALL FIXES)
+
+This is the locked, final workflow.
+
+🎯 Core Goal (unchanged)
+
+A simple, reliable tuition attendance system that:
+
+Works flawlessly on mobile first
+
+Scales to desktop
+
+Is easy for non-technical teachers & guardians
+
+Never loses attendance data
+
+👥 Roles & Access (UPDATED)
+1️⃣ Admin
+
+Admin signs up first and owns the system
+
+Admin can:
+
+Create teachers
+
+Create batches
+
+Create students
+
+Assign:
+
+One teacher → multiple batches
+
+Student → one batch
+
+Student → guardian mobile number
+
+Admin can:
+
+Edit attendance within 12 hours of publishing
+
+Override attendance anytime if required
+
+2️⃣ Teacher (SIMPLIFIED LOGIN)
+
+No password
+
+Teacher logs in by:
+
+Selecting Teacher Name + Teacher ID from a dropdown
+
+One teacher can handle multiple batches
+
+Teacher can:
+
+Create sessions
+
+Take attendance
+
+Edit attendance within 12 hours
+
+View batch-wise attendance & top performers
+
+This is intentionally simple for real tuition use.
+
+3️⃣ Guardian (FIXED VISIBILITY)
+
+Logs in using mobile number only
+
+Attendance is always visible once session is published
+
+If mobile linked to:
+
+One child → auto-select
+
+Multiple children → select child
+
+Guardian can view:
+
+Attendance percentage
+
+Session-wise heatmap
+
+Guardian cannot edit anything
+
+🧩 Core Concepts (REFINED)
+Batch
+
+A class/group
+
+Contains:
+
+One teacher
+
+Many students
+
+Many sessions
+
+Session (UPDATED BEHAVIOR)
+
+Created by teacher inside a batch
+
+Represents one class
+
+Has:
+
+Batch ID
+
+Teacher ID
+
+Date & time
+
+Status:
+
+DRAFT → not visible to guardian
+
+PUBLISHED → visible to guardian
+
+LOCKED → no edits allowed
+
+Attendance (UPDATED RULES)
+
+Attendance is marked per session
+
+States:
+
+Present (Green)
+
+Absent (Red)
+
+Not Marked (Grey)
+
+Once teacher clicks Publish Attendance:
+
+Attendance becomes visible to guardians
+
+Edit window of 12 hours starts
+
+After 12 hours:
+
+Session becomes LOCKED
+
+Read-only forever (admin override allowed)
+
+📊 Attendance & Analytics (UPDATED)
+Attendance Percentage
+Attendance % = (Present Sessions / Total Published Sessions) × 100
+
+
+Grey (not marked) sessions are excluded
+
+Percentage updates immediately after publishing
+
+Heatmap (FINAL DESIGN)
+
+Used by both guardian & teacher
+
+Grid:
+
+50 blocks
+
+5 rows × 10 columns
+
+Rules:
+
+1 block = 1 session
+
+Shows latest 50 sessions
+
+Colors:
+
+🟩 Green → Present
+
+🟥 Red → Absent
+
+⬜ Grey → Not marked
+
+Tap / click:
+
+Shows session date & time
+
+Mobile-first, scroll-free, clean.
+
+Teacher Leaderboard (SIMPLIFIED)
+
+Shows attendance % immediately
+
+❌ No minimum session requirement
+
+Ranked by:
+
+Attendance %
+
+Total sessions attended (tie-breaker)
+
+Per batch only
+
+This reflects real-time reality, not artificial filtering.
+
+🎨 UI / UX PRINCIPLES (IMPORTANT)
+Mobile-first always
+
+Single-column layouts
+
+Large tap targets
+
+Minimal text
+
+Heatmap as primary visualization
+
+Seamless navigation
+
+Teacher:
+
+Login → Select Batch → Attendance / Analytics
+
+Guardian:
+
+Login → Select Child → Heatmap + %
+
+No nested menus. No clutter.
+
+🛑 Explicitly Removed (By Design)
+
+❌ OTP
+
+❌ Teacher passwords
+
+❌ Payments
+
+❌ GPS / Camera
+
+❌ Student login
+
+❌ Notifications
+
+This keeps the app fast, safe, and simple.
+
+PART 2 — UPDATED PERFECT MASTER PROMPT (FINAL)
+
+You can give this directly to an AI developer or use it yourself.
+
+🔥 FINAL MASTER PROMPT (COPY-PASTE)
+
+Act as a senior full-stack architect and product designer.
+Build a production-grade, mobile-first tuition attendance web application that works seamlessly on mobile and desktop.
+
+Tech Stack (MANDATORY)
+
+Frontend: React + Next.js (latest App Router)
+
+Styling: Tailwind CSS
+
+Backend: Next.js API routes
+
+Database: MongoDB with Mongoose
+
+Roles & Authentication
+Admin
+
+Admin signs up first and becomes system owner
+
+Admin dashboard must allow:
+
+Create teachers
+
+Create batches
+
+Create students
+
+Assign teacher → multiple batches
+
+Assign student → batch
+
+Assign student → guardian mobile number
+
+Admin can edit attendance within 12 hours of publishing
+
+Admin can override locked attendance
+
+Teacher (NO PASSWORD)
+
+Teacher logs in via dropdown selection
+
+Teacher Name + Teacher ID
+
+One teacher can handle multiple batches
+
+Teacher must select a batch before any action
+
+Teacher can:
+
+Create sessions
+
+Mark attendance
+
+Publish attendance
+
+Edit attendance within 12 hours
+
+View batch-wise attendance analytics
+
+Guardian
+
+Guardian logs in using mobile number only
+
+If mobile linked to multiple students, show selection screen
+
+Attendance must always be visible after publishing
+
+Guardian can view:
+
+Attendance percentage
+
+Session-wise attendance heatmap
+
+Read-only access
+
+Attendance & Session Rules
+
+Attendance is session-based
+
+Each session belongs to exactly one batch
+
+Session lifecycle:
+
+DRAFT → PUBLISHED → LOCKED
+
+Editing allowed for 12 hours after publishing
+
+Heatmap UI (MANDATORY)
+
+Use heatmap for attendance visualization
+
+Grid size:
+
+50 blocks
+
+5 rows × 10 columns
+
+1 block = 1 session
+
+Show latest 50 sessions
+
+Colors:
+
+Green → Present
+
+Red → Absent
+
+Grey → Not marked
+
+Tap / click shows date & time
+
+Analytics
+
+Attendance percentage updates immediately
+
+Teacher leaderboard:
+
+No minimum session limit
+
+Ranked by attendance %
+
+Per batch only
+
+Database Requirements
+
+MongoDB with Mongoose
+
+Collections:
+
+Admin
+
+Teacher
+
+Batch
+
+Student
+
+Session
+
+Attendance
+
+Proper indexing and references
+
+Data persistence must be reliable; no data loss
+
+UI / UX
+
+Mobile-first responsive design
+
+Clean dashboards for each role
+
+Clear batch context always visible
+
+Reusable components (especially heatmap)
+
+Simple, seamless navigation
+
+Deliverables
+
+Database schema
+
+API routes
+
+Authentication flow
+
+Frontend pages
+
+Reusable UI components
+
+Scalable folder structure
+
+Build this as a real-world production system, not a demo.

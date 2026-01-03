@@ -111,7 +111,7 @@ export default function GuardianDashboard() {
               Attendance History
             </CardTitle>
             <CardDescription>
-              Last 100 sessions shown below
+              Last 50 sessions shown below
             </CardDescription>
           </CardHeader>
           <CardContent>

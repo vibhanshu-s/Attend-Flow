@@ -17,7 +17,6 @@ export type Admin = typeof admins.$inferSelect;
 export const teachers = pgTable("teachers", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   teacherId: text("teacher_id").notNull().unique(),
-  password: text("password").notNull(),
   name: text("name").notNull(),
 });
 
@@ -56,9 +55,10 @@ export const sessions = pgTable("sessions", {
   date: text("date").notNull(),
   time: text("time").notNull(),
   status: text("status").notNull().$type<SessionStatus>().default("DRAFT"),
+  publishedAt: text("published_at"),
 });
 
-export const insertSessionSchema = createInsertSchema(sessions).omit({ id: true, status: true });
+export const insertSessionSchema = createInsertSchema(sessions).omit({ id: true, status: true, publishedAt: true });
 export type InsertSession = z.infer<typeof insertSessionSchema>;
 export type Session = typeof sessions.$inferSelect;
 
@@ -90,7 +90,6 @@ export type SignupAdmin = z.infer<typeof signupAdminSchema>;
 
 export const loginTeacherSchema = z.object({
   teacherId: z.string().min(1, "Teacher ID is required"),
-  password: z.string().min(1, "Password is required"),
 });
 export type LoginTeacher = z.infer<typeof loginTeacherSchema>;
 

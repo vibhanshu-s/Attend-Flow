@@ -464,7 +464,6 @@ function CreateTeacherDialog({
   const teacherFormSchema = insertTeacherSchema.extend({
     name: z.string().min(1, "Name is required"),
     teacherId: z.string().min(1, "Teacher ID is required"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
   });
 
   const form = useForm<InsertTeacher>({
@@ -472,7 +471,6 @@ function CreateTeacherDialog({
     defaultValues: {
       name: "",
       teacherId: "",
-      password: "",
     },
   });
 
@@ -497,7 +495,7 @@ function CreateTeacherDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Teacher</DialogTitle>
-          <DialogDescription>Add a new teacher to the system</DialogDescription>
+          <DialogDescription>Add a new teacher to the system. Teachers can log in by selecting their name from a list.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-4">
@@ -522,19 +520,6 @@ function CreateTeacherDialog({
                   <FormLabel>Teacher ID</FormLabel>
                   <FormControl>
                     <Input placeholder="TCH001" data-testid="input-teacher-id" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="At least 6 characters" data-testid="input-teacher-password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

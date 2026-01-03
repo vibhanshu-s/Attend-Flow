@@ -122,7 +122,12 @@ export class MemStorage implements IStorage {
 
   async createBatch(insertBatch: InsertBatch): Promise<Batch> {
     const id = randomUUID();
-    const batch: Batch = { ...insertBatch, id };
+    const batch: Batch = { 
+      id,
+      name: insertBatch.name,
+      teacherId: insertBatch.teacherId,
+      description: insertBatch.description ?? null,
+    };
     this.batches.set(id, batch);
     return batch;
   }
@@ -215,9 +220,9 @@ export class MemStorage implements IStorage {
     if (!student) return [];
 
     const sessionsForBatch = Array.from(this.sessions.values())
-      .filter((s) => s.batchId === student.batchId)
+      .filter((s) => s.batchId === student.batchId && s.status !== "DRAFT")
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 100);
+      .slice(0, 50);
 
     return sessionsForBatch.map((session) => {
       const attendanceRecord = Array.from(this.attendanceRecords.values()).find(
@@ -235,7 +240,7 @@ export class MemStorage implements IStorage {
 
   async createSession(insertSession: InsertSession): Promise<Session> {
     const id = randomUUID();
-    const session: Session = { ...insertSession, id, status: "DRAFT" };
+    const session: Session = { ...insertSession, id, status: "DRAFT", publishedAt: null };
     this.sessions.set(id, session);
     return session;
   }
@@ -254,16 +259,25 @@ export class MemStorage implements IStorage {
     const session = this.sessions.get(sessionId);
     if (!session) return undefined;
     session.status = status;
+    if (status === "FINALIZED" && !session.publishedAt) {
+      session.publishedAt = new Date().toISOString();
+    }
     this.sessions.set(sessionId, session);
     return session;
   }
 
   async lockExpiredSessions(): Promise<void> {
-    const today = new Date().toISOString().split("T")[0];
-    for (const session of this.sessions.values()) {
-      if (session.date < today && session.status !== "LOCKED") {
-        session.status = "LOCKED";
-        this.sessions.set(session.id, session);
+    const now = new Date();
+    const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+    
+    const sessions = Array.from(this.sessions.values());
+    for (const session of sessions) {
+      if (session.status === "FINALIZED" && session.publishedAt) {
+        const publishedAt = new Date(session.publishedAt);
+        if (publishedAt < twelveHoursAgo) {
+          session.status = "LOCKED";
+          this.sessions.set(session.id, session);
+        }
       }
     }
   }

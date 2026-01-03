@@ -5,7 +5,6 @@ import type { StudentWithAttendance } from "@shared/schema";
 
 interface LeaderboardProps {
   students: StudentWithAttendance[];
-  minSessions?: number;
 }
 
 function getRankIcon(rank: number) {
@@ -28,13 +27,17 @@ function getPercentageColor(percentage: number) {
   return "bg-red-500";
 }
 
-export function Leaderboard({ students, minSessions = 5 }: LeaderboardProps) {
-  const eligibleStudents = students
-    .filter(s => s.totalSessions >= minSessions)
-    .sort((a, b) => b.attendancePercentage - a.attendancePercentage)
+export function Leaderboard({ students }: LeaderboardProps) {
+  const rankedStudents = [...students]
+    .sort((a, b) => {
+      if (b.attendancePercentage !== a.attendancePercentage) {
+        return b.attendancePercentage - a.attendancePercentage;
+      }
+      return b.presentSessions - a.presentSessions;
+    })
     .slice(0, 10);
 
-  if (eligibleStudents.length === 0) {
+  if (rankedStudents.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -45,7 +48,7 @@ export function Leaderboard({ students, minSessions = 5 }: LeaderboardProps) {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-sm">
-            Students need at least {minSessions} sessions to appear on the leaderboard.
+            Add students to see the leaderboard.
           </p>
         </CardContent>
       </Card>
@@ -61,7 +64,7 @@ export function Leaderboard({ students, minSessions = 5 }: LeaderboardProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {eligibleStudents.map((student, index) => (
+        {rankedStudents.map((student, index) => (
           <div
             key={student.id}
             className="flex items-center gap-3 p-2 rounded-lg hover-elevate"

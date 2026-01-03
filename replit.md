@@ -7,11 +7,12 @@ TuitionTrack is a web-based tuition attendance management system designed for ed
 ## Recent Changes (January 2026)
 - Complete implementation of all three user role dashboards
 - Session-based attendance with PRESENT/ABSENT toggle buttons
-- Automatic session locking after midnight (configurable)
+- **Teacher login simplified**: No password required, uses dropdown selection with Name + Teacher ID
+- **12-hour edit window**: Sessions can be edited for 12 hours after publishing, then auto-lock
+- **Heatmap updated**: 50 blocks in 5 rows x 10 columns layout
+- **Leaderboard**: Shows results immediately with no minimum session requirement
 - Fixed authentication flow with localStorage persistence and protected routes
-- Analytics heatmap visualization for attendance patterns
-- Leaderboard component showing top-performing students
-- All CRUD operations functional via in-memory storage
+- All CRUD operations functional via in-memory storage with explicit data filtering
 
 ## User Preferences
 
