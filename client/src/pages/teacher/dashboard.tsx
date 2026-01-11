@@ -470,7 +470,6 @@ function AttendanceMarkingSection({
               data-testid="button-update-attendance"
             >
               {finalizeSessionMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              <Check className="h-4 w-4 mr-2" />
               Update
             </Button>
           )}

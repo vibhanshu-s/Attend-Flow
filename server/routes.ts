@@ -319,10 +319,7 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Session not found" });
       }
 
-      if (session.status !== "DRAFT") {
-        return res.status(400).json({ message: "Session is already finalized" });
-      }
-
+      // Allow both DRAFT and FINALIZED sessions to be updated
       const updatedSession = await storage.updateSessionStatus(req.params.sessionId, "FINALIZED");
       res.json(updatedSession);
     } catch (error) {
