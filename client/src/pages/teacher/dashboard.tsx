@@ -269,6 +269,7 @@ export default function TeacherDashboard() {
         onOpenChange={setShowCreateSessionDialog}
         batchId={selectedBatchId || ""}
         teacherId={teacher.id}
+        onSessionCreated={(sessionId) => setSelectedSessionId(sessionId)}
       />
     </div>
   );
@@ -463,11 +464,13 @@ function CreateSessionDialog({
   onOpenChange,
   batchId,
   teacherId,
+  onSessionCreated,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   batchId: string;
   teacherId: string;
+  onSessionCreated: (sessionId: string) => void;
 }) {
   const { toast } = useToast();
 
@@ -493,13 +496,14 @@ function CreateSessionDialog({
         ...data,
         batchId,
         teacherId,
-      });
+      }) as { id: string };
     },
-    onSuccess: () => {
+    onSuccess: (newSession) => {
       queryClient.invalidateQueries({ queryKey: [`/api/batches/${batchId}/sessions`] });
       toast({ title: "Session created successfully" });
       form.reset();
       onOpenChange(false);
+      onSessionCreated(newSession.id);
     },
     onError: (error: Error) => {
       toast({ title: "Failed to create session", description: error.message, variant: "destructive" });
