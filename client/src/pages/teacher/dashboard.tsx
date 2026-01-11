@@ -370,10 +370,10 @@ function AttendanceMarkingSection({
       queryClient.invalidateQueries({ queryKey: [`/api/batches/${session.batchId}/sessions`] });
       queryClient.invalidateQueries({ queryKey: [`/api/batches/${session.batchId}/analytics`] });
       queryClient.invalidateQueries({ queryKey: [`/api/sessions/${session.id}/attendance`] });
-      toast({ title: "Session finalized successfully" });
+      toast({ title: session.status === "DRAFT" ? "Session finalized successfully" : "Attendance updated successfully" });
     },
     onError: (error: Error) => {
-      toast({ title: "Failed to finalize session", description: error.message, variant: "destructive" });
+      toast({ title: session.status === "DRAFT" ? "Failed to finalize session" : "Failed to update attendance", description: error.message, variant: "destructive" });
     },
   });
 
@@ -463,9 +463,13 @@ function AttendanceMarkingSection({
           ) : (
             <Button
               size="sm"
-              onClick={() => toast({ title: "Attendance updated", description: "All changes have been saved automatically" })}
+              onClick={() => {
+                finalizeSessionMutation.mutate();
+              }}
+              disabled={finalizeSessionMutation.isPending}
               data-testid="button-update-attendance"
             >
+              {finalizeSessionMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               <Check className="h-4 w-4 mr-2" />
               Update
             </Button>
