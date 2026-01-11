@@ -1,0 +1,262 @@
+Act as a senior full-stack engineer, system architect, and professional UI/UX designer.
+Your task is to finalize, fix, and polish an existing tuition attendance web application so that it is fully functional, professional, scalable, and ready for immediate real-world use by Agarwal Tutorial.
+
+CORE OBJECTIVE
+
+The application already exists.
+Your responsibility is to:
+
+Fix remaining functional and UX issues
+
+Simplify teacher–batch logic
+
+Ensure permanent data persistence
+
+Make the UI clean, minimal, and professional
+
+The application must be ready to ship, not a prototype.
+
+TECH STACK (MANDATORY)
+
+Frontend: React + Next.js (latest App Router)
+
+Styling: Tailwind CSS
+
+Backend: Next.js API routes
+
+Database: MongoDB Atlas (persistent production database)
+
+ORM: Mongoose
+
+No in-memory storage. No temporary state.
+All data must persist unless the database is manually cleared.
+
+BRANDING & UI REQUIREMENTS
+
+Application name: Agarwal Tutorial
+
+Use the provided logo consistently
+
+UI must be:
+
+Professional
+
+Minimal
+
+Tuition-grade
+
+Mobile-first
+
+Homepage UI Rule (IMPORTANT)
+
+Remove all labels, role cards, or explanatory text
+
+Homepage should be clean and professional
+
+Only show:
+
+Logo
+
+Application name
+
+Simple login entry points
+
+No demo text.
+No instructional labels.
+No filler UI elements.
+
+ROLES & ACCESS
+Admin
+
+Admin signs up first and owns the system
+
+Admin can:
+
+Create teachers
+
+Create batches
+
+Create students
+
+Assign students → batches
+
+Assign guardian mobile numbers
+
+Admin does NOT assign teachers to batches
+
+Admin can edit attendance within 12 hours of publishing
+
+Admin can override locked attendance
+
+Teacher (UPDATED LOGIC – CRITICAL)
+
+Teacher logs in via dropdown selection
+
+Teacher Name + Teacher ID
+
+No password
+
+Batch Handling (UPDATED)
+
+A batch can have multiple teachers
+
+A teacher can teach multiple batches
+
+Teachers are NOT assigned to batches during creation
+
+After login:
+
+Teacher must select a batch from a dropdown
+
+Teacher can switch batches anytime
+
+Batch selection is required before:
+
+Creating sessions
+
+Taking attendance
+
+Viewing analytics
+
+Do not ask for teacher while creating a batch.
+Do not lock a batch to a single teacher.
+
+Guardian
+
+Guardian logs in using mobile number only
+
+If mobile is linked to multiple students, show student selection
+
+Guardian must always see attendance after it is published
+
+Read-only access
+
+SESSION & ATTENDANCE MODEL
+
+Attendance is session-based
+
+Each session belongs to one batch
+
+Session lifecycle:
+
+DRAFT → not visible
+
+PUBLISHED → visible to guardians and teachers
+
+LOCKED → no edits allowed
+
+Editing Rules
+
+Attendance can be edited:
+
+By teacher or admin
+
+Within 12 hours after publishing
+
+After 12 hours → session becomes LOCKED
+
+HEATMAP ATTENDANCE UI
+
+Attendance must be shown using a heatmap
+
+Grid size:
+
+50 blocks
+
+5 rows × 10 columns
+
+1 block = 1 session
+
+Latest 50 sessions only
+
+Colors:
+
+Green → Present
+
+Red → Absent
+
+Grey → Not marked
+
+Clicking a block shows:
+
+Session date
+
+Session time
+
+Used consistently for:
+
+Guardian view
+
+Teacher student drill-down
+
+ANALYTICS
+
+Attendance percentage must update immediately on publishing
+
+Percentage formula:
+
+Present sessions / Total published sessions
+
+Grey (unmarked) sessions excluded
+
+Teacher View
+
+Batch-wise student list
+
+Attendance percentage per student
+
+Leaderboard:
+
+No minimum session limit
+
+Ranked by attendance percentage
+
+Tie-breaker: total sessions attended
+
+DATABASE REQUIREMENTS (NON-NEGOTIABLE)
+
+MongoDB Atlas must be used
+
+Proper schema design with references
+
+Required collections:
+
+Admin
+
+Teacher
+
+Batch
+
+Student
+
+Session
+
+Attendance
+
+Index critical fields:
+
+batchId
+
+studentId
+
+sessionId
+
+guardianMobile
+
+Data must persist across reloads, restarts, and redeployments.
+
+FINAL DELIVERABLE
+
+Fully functional attendance flow
+
+Teacher batch selection via dropdown
+
+Guardian attendance visibility fixed
+
+Clean professional UI with no homepage labels
+
+Permanent database storage
+
+Production-ready application for Agarwal Tutorial
+
+Build and fix this as a real tuition system ready for immediate use, not a demo.
