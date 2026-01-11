@@ -18,8 +18,6 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
-  await storage.lockExpiredSessions();
-
   app.post("/api/admin/signup", async (req, res) => {
     try {
       const data = signupAdminSchema.parse(req.body);
@@ -194,7 +192,6 @@ export async function registerRoutes(
 
   app.get("/api/batches/:batchId/sessions", async (req, res) => {
     try {
-      await storage.lockExpiredSessions();
       const sessions = await storage.getSessionsByBatchId(req.params.batchId);
       res.json(sessions);
     } catch (error) {
@@ -292,15 +289,6 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Session not found" });
       }
 
-      if (session.status === "LOCKED") {
-        return res.status(403).json({ message: "Session is locked" });
-      }
-
-      const today = new Date().toISOString().split("T")[0];
-      if (session.status === "FINALIZED" && session.date !== today) {
-        return res.status(403).json({ message: "Can only edit attendance on the same day" });
-      }
-
       const { studentId, status } = req.body;
       const attendance = await storage.createOrUpdateAttendance(req.params.sessionId, studentId, status);
       res.json(attendance);
@@ -314,10 +302,6 @@ export async function registerRoutes(
       const session = await storage.getSessionById(req.params.sessionId);
       if (!session) {
         return res.status(404).json({ message: "Session not found" });
-      }
-
-      if (session.status === "LOCKED") {
-        return res.status(403).json({ message: "Session is locked" });
       }
 
       const { status } = req.body;
@@ -336,7 +320,7 @@ export async function registerRoutes(
       }
 
       if (session.status !== "DRAFT") {
-        return res.status(400).json({ message: "Session is already finalized or locked" });
+        return res.status(400).json({ message: "Session is already finalized" });
       }
 
       const updatedSession = await storage.updateSessionStatus(req.params.sessionId, "FINALIZED");

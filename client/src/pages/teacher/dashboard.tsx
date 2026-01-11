@@ -323,10 +323,7 @@ function AttendanceMarkingSection({
 }) {
   const { toast } = useToast();
   
-  const isEditable = session.status !== "LOCKED";
-  const today = new Date().toISOString().split("T")[0];
-  const isToday = session.date === today;
-  const canEdit = isEditable && (session.status === "DRAFT" || isToday);
+  const canEdit = session.status === "DRAFT" || session.status === "FINALIZED";
 
   const getStudentAttendance = (studentId: string): AttendanceStatus => {
     const record = attendance.find((a) => a.studentId === studentId);
