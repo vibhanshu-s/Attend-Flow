@@ -36,6 +36,7 @@ import {
   User,
 } from "lucide-react";
 import { z } from "zod";
+import { motion, AnimatePresence } from "framer-motion";
 import logoUrl from "@assets/image_1768149327948.png";
 
 export default function TeacherDashboard() {
@@ -294,19 +295,27 @@ function SessionCard({
   onSelect: () => void;
 }) {
   return (
-    <Card
-      className={`cursor-pointer hover-elevate ${isSelected ? "ring-2 ring-primary" : ""}`}
-      onClick={onSelect}
-      data-testid={`session-card-${session.id}`}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
     >
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-base">{session.date}</CardTitle>
-          <SessionStatusBadge status={session.status} />
-        </div>
-        <CardDescription>{session.time}</CardDescription>
-      </CardHeader>
-    </Card>
+      <Card
+        className={`cursor-pointer transition-all duration-200 ${isSelected ? "ring-2 ring-primary shadow-lg" : "hover:shadow-md"}`}
+        onClick={onSelect}
+        data-testid={`session-card-${session.id}`}
+      >
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between gap-2">
+            <CardTitle className="text-base">{session.date}</CardTitle>
+            <SessionStatusBadge status={session.status} />
+          </div>
+          <CardDescription>{session.time}</CardDescription>
+        </CardHeader>
+      </Card>
+    </motion.div>
   );
 }
 
@@ -323,7 +332,7 @@ function AttendanceMarkingSection({
 }) {
   const { toast } = useToast();
   
-  const canEdit = session.status === "DRAFT" || session.status === "FINALIZED";
+  const canEdit = true;
 
   const getStudentAttendance = (studentId: string): AttendanceStatus => {
     const record = attendance.find((a) => a.studentId === studentId);
@@ -429,7 +438,7 @@ function AttendanceMarkingSection({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Finalize this session?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Once finalized, attendance can be edited for 12 hours before the session is locked. Make sure all attendance is marked correctly.
+                    This will publish the session. You can still edit attendance anytime after finalizing.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -444,21 +453,16 @@ function AttendanceMarkingSection({
         </div>
       )}
 
-      {!canEdit && (
-        <Card className="border-amber-500/50 bg-amber-500/5">
-          <CardContent className="py-3 text-sm text-amber-600 dark:text-amber-400">
-            This session is locked and cannot be edited.
-          </CardContent>
-        </Card>
-      )}
-
       <Card>
         <CardContent className="p-0">
           <div className="divide-y">
-            {students.map((student) => (
-              <div
+            {students.map((student, index) => (
+              <motion.div
                 key={student.id}
-                className="flex items-center justify-between gap-4 p-4"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2, delay: index * 0.03 }}
+                className="flex items-center justify-between gap-4 p-4 hover:bg-muted/50 transition-colors"
                 data-testid={`student-row-${student.id}`}
               >
                 <div className="flex items-center gap-3">
@@ -473,7 +477,7 @@ function AttendanceMarkingSection({
                   onStatusChange={(status) => markAttendanceMutation.mutate({ studentId: student.id, status })}
                   disabled={!canEdit || markAttendanceMutation.isPending}
                 />
-              </div>
+              </motion.div>
             ))}
           </div>
         </CardContent>

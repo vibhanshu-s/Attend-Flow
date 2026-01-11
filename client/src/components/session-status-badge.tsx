@@ -19,9 +19,9 @@ export function SessionStatusBadge({ status }: SessionStatusBadgeProps) {
       icon: CheckCircle,
     },
     LOCKED: {
-      label: "Locked",
-      variant: "outline" as const,
-      icon: Lock,
+      label: "Published",
+      variant: "default" as const,
+      icon: CheckCircle,
     },
   };
 
