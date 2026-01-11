@@ -36,7 +36,6 @@ import {
   User,
 } from "lucide-react";
 import { z } from "zod";
-import { motion, AnimatePresence } from "framer-motion";
 import logoUrl from "@assets/image_1768149327948.png";
 
 export default function TeacherDashboard() {
@@ -175,7 +174,10 @@ export default function TeacherDashboard() {
                       key={session.id}
                       session={session}
                       isSelected={selectedSessionId === session.id}
-                      onSelect={() => setSelectedSessionId(session.id)}
+                      onSelect={() => {
+                      setSelectedSessionId(session.id);
+                      setActiveTab("attendance");
+                    }}
                     />
                   ))}
                 </div>
@@ -295,27 +297,19 @@ function SessionCard({
   onSelect: () => void;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+    <Card
+      className={`cursor-pointer transition-all duration-150 active:scale-[0.98] ${isSelected ? "ring-2 ring-primary shadow-lg" : "hover:shadow-md"}`}
+      onClick={onSelect}
+      data-testid={`session-card-${session.id}`}
     >
-      <Card
-        className={`cursor-pointer transition-all duration-200 ${isSelected ? "ring-2 ring-primary shadow-lg" : "hover:shadow-md"}`}
-        onClick={onSelect}
-        data-testid={`session-card-${session.id}`}
-      >
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-base">{session.date}</CardTitle>
-            <SessionStatusBadge status={session.status} />
-          </div>
-          <CardDescription>{session.time}</CardDescription>
-        </CardHeader>
-      </Card>
-    </motion.div>
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="text-base">{session.date}</CardTitle>
+          <SessionStatusBadge status={session.status} />
+        </div>
+        <CardDescription>{session.time}</CardDescription>
+      </CardHeader>
+    </Card>
   );
 }
 
@@ -456,12 +450,9 @@ function AttendanceMarkingSection({
       <Card>
         <CardContent className="p-0">
           <div className="divide-y">
-            {students.map((student, index) => (
-              <motion.div
+            {students.map((student) => (
+              <div
                 key={student.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2, delay: index * 0.03 }}
                 className="flex items-center justify-between gap-4 p-4 hover:bg-muted/50 transition-colors"
                 data-testid={`student-row-${student.id}`}
               >
@@ -475,9 +466,9 @@ function AttendanceMarkingSection({
                   studentId={student.id}
                   status={getStudentAttendance(student.id)}
                   onStatusChange={(status) => markAttendanceMutation.mutate({ studentId: student.id, status })}
-                  disabled={!canEdit || markAttendanceMutation.isPending}
+                  disabled={markAttendanceMutation.isPending}
                 />
-              </motion.div>
+              </div>
             ))}
           </div>
         </CardContent>
