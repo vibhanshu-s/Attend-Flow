@@ -31,6 +31,7 @@ import {
   Calendar,
   BarChart3,
   CheckCircle,
+  Check,
   Clock,
   BookOpen,
   User,
@@ -432,7 +433,7 @@ function AttendanceMarkingSection({
           >
             Mark All Absent
           </Button>
-          {session.status === "DRAFT" && (
+          {session.status === "DRAFT" ? (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
@@ -459,6 +460,15 @@ function AttendanceMarkingSection({
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+          ) : (
+            <Button
+              size="sm"
+              onClick={() => toast({ title: "Attendance updated", description: "All changes have been saved automatically" })}
+              data-testid="button-update-attendance"
+            >
+              <Check className="h-4 w-4 mr-2" />
+              Update
+            </Button>
           )}
         </div>
       )}
