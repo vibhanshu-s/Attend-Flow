@@ -476,11 +476,14 @@ function CreateSessionDialog({
     time: z.string().min(1, "Time is required"),
   });
 
+  const now = new Date();
+  const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
+  
   const form = useForm({
     resolver: zodResolver(sessionFormSchema),
     defaultValues: {
-      date: new Date().toISOString().split("T")[0],
-      time: "10:00",
+      date: now.toISOString().split("T")[0],
+      time: currentTime,
     },
   });
 
