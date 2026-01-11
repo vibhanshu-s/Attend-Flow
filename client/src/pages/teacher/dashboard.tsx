@@ -44,6 +44,7 @@ export default function TeacherDashboard() {
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
   const [showCreateSessionDialog, setShowCreateSessionDialog] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("sessions");
 
   const { data: batches, isLoading: isLoadingBatches } = useQuery<Batch[]>({
     queryKey: [`/api/teacher/${teacher?.id}/batches`],
@@ -108,7 +109,7 @@ export default function TeacherDashboard() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-6">
           <label className="text-sm font-medium text-muted-foreground mb-2 block">Select Batch</label>
-          <Select value={selectedBatchId || ""} onValueChange={(value) => { setSelectedBatchId(value); setSelectedSessionId(null); }}>
+          <Select value={selectedBatchId || ""} onValueChange={(value) => { setSelectedBatchId(value); setSelectedSessionId(null); setActiveTab("sessions"); }}>
             <SelectTrigger className="w-full max-w-xs" data-testid="select-batch">
               <SelectValue placeholder="Choose a batch" />
             </SelectTrigger>
@@ -135,7 +136,7 @@ export default function TeacherDashboard() {
             </CardContent>
           </Card>
         ) : (
-          <Tabs defaultValue="sessions" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full max-w-md grid-cols-3">
               <TabsTrigger value="sessions" data-testid="tab-sessions">
                 <Calendar className="h-4 w-4 mr-2" />
@@ -167,7 +168,7 @@ export default function TeacherDashboard() {
                 </div>
               ) : sessions && sessions.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {sessions.map((session) => (
+                  {[...sessions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime() || b.time.localeCompare(a.time)).map((session) => (
                     <SessionCard
                       key={session.id}
                       session={session}
@@ -269,7 +270,10 @@ export default function TeacherDashboard() {
         onOpenChange={setShowCreateSessionDialog}
         batchId={selectedBatchId || ""}
         teacherId={teacher.id}
-        onSessionCreated={(sessionId) => setSelectedSessionId(sessionId)}
+        onSessionCreated={(sessionId) => {
+          setSelectedSessionId(sessionId);
+          setActiveTab("attendance");
+        }}
       />
     </div>
   );
