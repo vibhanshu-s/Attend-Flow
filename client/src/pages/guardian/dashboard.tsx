@@ -9,6 +9,7 @@ import { Heatmap } from "@/components/heatmap";
 import { AttendancePercentage } from "@/components/attendance-percentage";
 import type { HeatmapData, StudentWithAttendance } from "@shared/schema";
 import { User, LogOut, Calendar, BarChart3, Users } from "lucide-react";
+import logoUrl from "@assets/image_1768149327948.png";
 
 export default function GuardianDashboard() {
   const [, setLocation] = useLocation();
@@ -43,12 +44,10 @@ export default function GuardianDashboard() {
       <header className="border-b sticky top-0 z-50 bg-background/95 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-primary/10">
-              <User className="h-5 w-5 text-primary" />
-            </div>
+            <img src={logoUrl} alt="Agarwal Tutorial" className="h-8 w-auto" />
             <div>
               <p className="font-semibold" data-testid="text-student-name">{selectedStudent.name}</p>
-              <p className="text-sm text-muted-foreground">Guardian View</p>
+              <p className="text-sm text-muted-foreground">Agarwal Tutorial</p>
             </div>
           </div>
           <div className="flex items-center gap-2">

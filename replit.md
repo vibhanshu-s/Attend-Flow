@@ -1,18 +1,20 @@
-# TuitionTrack - Attendance Management System
+# Agarwal Tutorial - Attendance Management System
 
 ## Overview
 
-TuitionTrack is a web-based tuition attendance management system designed for educational institutions. It provides session-based attendance tracking with visual analytics (heatmaps and percentages), supporting three distinct user roles: Admin (system owner who manages teachers, batches, and students), Teacher (marks and manages attendance for assigned batches), and Guardian (views their children's attendance records). The application is built as a mobile-first, responsive web app compatible with both mobile devices and desktop computers.
+Agarwal Tutorial is a production-ready web-based tuition attendance management system. It provides session-based attendance tracking with visual analytics (heatmaps and percentages), supporting three distinct user roles: Admin (system owner who manages teachers, batches, and students), Teacher (marks and manages attendance for assigned batches), and Guardian (views their children's attendance records). The application is built as a mobile-first, responsive web app compatible with both mobile devices and desktop computers.
 
 ## Recent Changes (January 2026)
+- **Production Database**: Migrated from in-memory storage to PostgreSQL for data persistence
+- **Rebranded**: All pages now display "Agarwal Tutorial" with the official logo
 - Complete implementation of all three user role dashboards
 - Session-based attendance with PRESENT/ABSENT toggle buttons
 - **Teacher login simplified**: No password required, uses dropdown selection with Name + Teacher ID
 - **12-hour edit window**: Sessions can be edited for 12 hours after publishing, then auto-lock
-- **Heatmap updated**: 50 blocks in 5 rows x 10 columns layout
+- **Heatmap**: 50 blocks in 5 rows x 10 columns layout
 - **Leaderboard**: Shows results immediately with no minimum session requirement
 - Fixed authentication flow with localStorage persistence and protected routes
-- All CRUD operations functional via in-memory storage with explicit data filtering
+- Explicit data filtering on all API endpoints for security
 
 ## User Preferences
 

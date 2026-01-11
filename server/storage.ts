@@ -1,11 +1,21 @@
-import { randomUUID } from "crypto";
+import { eq, and, ne, lt, desc, sql } from "drizzle-orm";
+import { db } from "./db";
+import {
+  admins,
+  teachers,
+  batches,
+  students,
+  sessions,
+  attendance,
+  users,
+} from "@shared/schema";
 import type {
   Admin, InsertAdmin,
   Teacher, InsertTeacher,
   Batch, InsertBatch, BatchWithDetails,
   Student, InsertStudent, StudentWithAttendance,
   Session, InsertSession, SessionStatus,
-  Attendance, InsertAttendance, AttendanceStatus,
+  Attendance, AttendanceStatus,
   HeatmapData,
   User, InsertUser,
 } from "@shared/schema";
@@ -52,144 +62,133 @@ export interface IStorage {
   getStats(): Promise<{ totalTeachers: number; totalBatches: number; totalStudents: number; totalSessions: number }>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private admins: Map<string, Admin>;
-  private teachers: Map<string, Teacher>;
-  private batches: Map<string, Batch>;
-  private students: Map<string, Student>;
-  private sessions: Map<string, Session>;
-  private attendanceRecords: Map<string, Attendance>;
-
-  constructor() {
-    this.users = new Map();
-    this.admins = new Map();
-    this.teachers = new Map();
-    this.batches = new Map();
-    this.students = new Map();
-    this.sessions = new Map();
-    this.attendanceRecords = new Map();
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find((user) => user.username === username);
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
   async createAdmin(insertAdmin: InsertAdmin): Promise<Admin> {
-    const id = randomUUID();
-    const admin: Admin = { ...insertAdmin, id };
-    this.admins.set(id, admin);
+    const [admin] = await db.insert(admins).values(insertAdmin).returning();
     return admin;
   }
 
   async getAdminByEmail(email: string): Promise<Admin | undefined> {
-    return Array.from(this.admins.values()).find((admin) => admin.email === email);
+    const [admin] = await db.select().from(admins).where(eq(admins.email, email));
+    return admin;
   }
 
   async getAdminById(id: string): Promise<Admin | undefined> {
-    return this.admins.get(id);
+    const [admin] = await db.select().from(admins).where(eq(admins.id, id));
+    return admin;
   }
 
   async createTeacher(insertTeacher: InsertTeacher): Promise<Teacher> {
-    const id = randomUUID();
-    const teacher: Teacher = { ...insertTeacher, id };
-    this.teachers.set(id, teacher);
+    const [teacher] = await db.insert(teachers).values(insertTeacher).returning();
     return teacher;
   }
 
   async getTeacherByTeacherId(teacherId: string): Promise<Teacher | undefined> {
-    return Array.from(this.teachers.values()).find((teacher) => teacher.teacherId === teacherId);
+    const [teacher] = await db.select().from(teachers).where(eq(teachers.teacherId, teacherId));
+    return teacher;
   }
 
   async getTeacherById(id: string): Promise<Teacher | undefined> {
-    return this.teachers.get(id);
+    const [teacher] = await db.select().from(teachers).where(eq(teachers.id, id));
+    return teacher;
   }
 
   async getAllTeachers(): Promise<Teacher[]> {
-    return Array.from(this.teachers.values());
+    return db.select().from(teachers);
   }
 
   async createBatch(insertBatch: InsertBatch): Promise<Batch> {
-    const id = randomUUID();
-    const batch: Batch = { 
-      id,
+    const [batch] = await db.insert(batches).values({
       name: insertBatch.name,
       teacherId: insertBatch.teacherId,
       description: insertBatch.description ?? null,
-    };
-    this.batches.set(id, batch);
+    }).returning();
     return batch;
   }
 
   async getBatchById(id: string): Promise<Batch | undefined> {
-    return this.batches.get(id);
+    const [batch] = await db.select().from(batches).where(eq(batches.id, id));
+    return batch;
   }
 
   async getAllBatches(): Promise<Batch[]> {
-    return Array.from(this.batches.values());
+    return db.select().from(batches);
   }
 
   async getBatchesWithDetails(): Promise<BatchWithDetails[]> {
-    const batches = Array.from(this.batches.values());
-    return batches.map((batch) => {
-      const teacher = this.teachers.get(batch.teacherId);
-      const studentCount = Array.from(this.students.values()).filter((s) => s.batchId === batch.id).length;
-      const sessionCount = Array.from(this.sessions.values()).filter((s) => s.batchId === batch.id).length;
+    const allBatches = await db.select().from(batches);
+    const allTeachers = await db.select().from(teachers);
+    const allStudents = await db.select().from(students);
+    const allSessions = await db.select().from(sessions);
+
+    return allBatches.map((batch) => {
+      const teacher = allTeachers.find(t => t.id === batch.teacherId);
+      const studentCount = allStudents.filter(s => s.batchId === batch.id).length;
+      const sessionCount = allSessions.filter(s => s.batchId === batch.id).length;
       return { ...batch, teacher, studentCount, sessionCount };
     });
   }
 
   async getBatchesByTeacherId(teacherId: string): Promise<Batch[]> {
-    return Array.from(this.batches.values()).filter((batch) => batch.teacherId === teacherId);
+    return db.select().from(batches).where(eq(batches.teacherId, teacherId));
   }
 
   async createStudent(insertStudent: InsertStudent): Promise<Student> {
-    const id = randomUUID();
-    const student: Student = { ...insertStudent, id };
-    this.students.set(id, student);
+    const [student] = await db.insert(students).values(insertStudent).returning();
     return student;
   }
 
   async getStudentById(id: string): Promise<Student | undefined> {
-    return this.students.get(id);
+    const [student] = await db.select().from(students).where(eq(students.id, id));
+    return student;
   }
 
   async getAllStudents(): Promise<Student[]> {
-    return Array.from(this.students.values());
+    return db.select().from(students);
   }
 
   async getStudentsByBatchId(batchId: string): Promise<Student[]> {
-    return Array.from(this.students.values()).filter((student) => student.batchId === batchId);
+    return db.select().from(students).where(eq(students.batchId, batchId));
   }
 
   async getStudentsByGuardianMobile(mobile: string): Promise<Student[]> {
-    return Array.from(this.students.values()).filter((student) => student.guardianMobile === mobile);
+    return db.select().from(students).where(eq(students.guardianMobile, mobile));
   }
 
   async getStudentWithAttendance(studentId: string): Promise<StudentWithAttendance | undefined> {
-    const student = this.students.get(studentId);
+    const [student] = await db.select().from(students).where(eq(students.id, studentId));
     if (!student) return undefined;
 
-    const studentBatchSessions = Array.from(this.sessions.values()).filter(
-      (s) => s.batchId === student.batchId && s.status !== "DRAFT"
-    );
+    const studentBatchSessions = await db.select().from(sessions)
+      .where(and(eq(sessions.batchId, student.batchId), ne(sessions.status, "DRAFT")));
 
-    const studentAttendance = Array.from(this.attendanceRecords.values()).filter(
-      (a) => a.studentId === studentId && studentBatchSessions.some((s) => s.id === a.sessionId)
-    );
+    const sessionIds = studentBatchSessions.map(s => s.id);
+    
+    let studentAttendance: Attendance[] = [];
+    if (sessionIds.length > 0) {
+      studentAttendance = await db.select().from(attendance)
+        .where(and(
+          eq(attendance.studentId, studentId),
+          sql`${attendance.sessionId} = ANY(${sessionIds})`
+        ));
+    }
 
-    const presentSessions = studentAttendance.filter((a) => a.status === "PRESENT").length;
+    const presentSessions = studentAttendance.filter(a => a.status === "PRESENT").length;
     const totalSessions = studentBatchSessions.length;
     const attendancePercentage = totalSessions > 0 ? (presentSessions / totalSessions) * 100 : 0;
 
@@ -197,131 +196,145 @@ export class MemStorage implements IStorage {
   }
 
   async getStudentsWithAttendanceByBatchId(batchId: string): Promise<StudentWithAttendance[]> {
-    const students = await this.getStudentsByBatchId(batchId);
-    const sessionsForBatch = Array.from(this.sessions.values()).filter(
-      (s) => s.batchId === batchId && s.status !== "DRAFT"
-    );
+    const batchStudents = await db.select().from(students).where(eq(students.batchId, batchId));
+    const sessionsForBatch = await db.select().from(sessions)
+      .where(and(eq(sessions.batchId, batchId), ne(sessions.status, "DRAFT")));
 
-    return students.map((student) => {
-      const studentAttendance = Array.from(this.attendanceRecords.values()).filter(
-        (a) => a.studentId === student.id && sessionsForBatch.some((s) => s.id === a.sessionId)
-      );
+    const sessionIds = sessionsForBatch.map(s => s.id);
+    
+    let allAttendance: Attendance[] = [];
+    if (sessionIds.length > 0) {
+      allAttendance = await db.select().from(attendance)
+        .where(sql`${attendance.sessionId} = ANY(${sessionIds})`);
+    }
 
-      const presentSessions = studentAttendance.filter((a) => a.status === "PRESENT").length;
+    return batchStudents.map(student => {
+      const studentAttendance = allAttendance.filter(a => a.studentId === student.id);
+      const presentSessions = studentAttendance.filter(a => a.status === "PRESENT").length;
       const totalSessions = sessionsForBatch.length;
       const attendancePercentage = totalSessions > 0 ? (presentSessions / totalSessions) * 100 : 0;
-
       return { ...student, attendancePercentage, totalSessions, presentSessions };
     });
   }
 
   async getStudentHeatmap(studentId: string): Promise<HeatmapData[]> {
-    const student = this.students.get(studentId);
+    const [student] = await db.select().from(students).where(eq(students.id, studentId));
     if (!student) return [];
 
-    const sessionsForBatch = Array.from(this.sessions.values())
-      .filter((s) => s.batchId === student.batchId && s.status !== "DRAFT")
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 50);
+    const sessionsForBatch = await db.select().from(sessions)
+      .where(and(eq(sessions.batchId, student.batchId), ne(sessions.status, "DRAFT")))
+      .orderBy(desc(sessions.date))
+      .limit(50);
 
-    return sessionsForBatch.map((session) => {
-      const attendanceRecord = Array.from(this.attendanceRecords.values()).find(
-        (a) => a.sessionId === session.id && a.studentId === studentId
-      );
+    const sessionIds = sessionsForBatch.map(s => s.id);
+    
+    let studentAttendance: Attendance[] = [];
+    if (sessionIds.length > 0) {
+      studentAttendance = await db.select().from(attendance)
+        .where(and(
+          eq(attendance.studentId, studentId),
+          sql`${attendance.sessionId} = ANY(${sessionIds})`
+        ));
+    }
 
+    return sessionsForBatch.map(session => {
+      const record = studentAttendance.find(a => a.sessionId === session.id);
       return {
         sessionId: session.id,
         date: session.date,
         time: session.time,
-        status: attendanceRecord?.status || "NOT_MARKED",
+        status: record?.status || "NOT_MARKED",
       };
     });
   }
 
   async createSession(insertSession: InsertSession): Promise<Session> {
-    const id = randomUUID();
-    const session: Session = { ...insertSession, id, status: "DRAFT", publishedAt: null };
-    this.sessions.set(id, session);
+    const [session] = await db.insert(sessions).values({
+      ...insertSession,
+      status: "DRAFT",
+      publishedAt: null,
+    }).returning();
     return session;
   }
 
   async getSessionById(id: string): Promise<Session | undefined> {
-    return this.sessions.get(id);
+    const [session] = await db.select().from(sessions).where(eq(sessions.id, id));
+    return session;
   }
 
   async getSessionsByBatchId(batchId: string): Promise<Session[]> {
-    return Array.from(this.sessions.values())
-      .filter((session) => session.batchId === batchId)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return db.select().from(sessions)
+      .where(eq(sessions.batchId, batchId))
+      .orderBy(desc(sessions.date));
   }
 
   async updateSessionStatus(sessionId: string, status: SessionStatus): Promise<Session | undefined> {
-    const session = this.sessions.get(sessionId);
-    if (!session) return undefined;
-    session.status = status;
-    if (status === "FINALIZED" && !session.publishedAt) {
-      session.publishedAt = new Date().toISOString();
+    const updateData: Partial<Session> = { status };
+    if (status === "FINALIZED") {
+      updateData.publishedAt = new Date().toISOString();
     }
-    this.sessions.set(sessionId, session);
+    const [session] = await db.update(sessions)
+      .set(updateData)
+      .where(eq(sessions.id, sessionId))
+      .returning();
     return session;
   }
 
   async lockExpiredSessions(): Promise<void> {
-    const now = new Date();
-    const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+    const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
     
-    const sessions = Array.from(this.sessions.values());
-    for (const session of sessions) {
-      if (session.status === "FINALIZED" && session.publishedAt) {
-        const publishedAt = new Date(session.publishedAt);
-        if (publishedAt < twelveHoursAgo) {
-          session.status = "LOCKED";
-          this.sessions.set(session.id, session);
-        }
-      }
-    }
+    await db.update(sessions)
+      .set({ status: "LOCKED" })
+      .where(and(
+        eq(sessions.status, "FINALIZED"),
+        lt(sessions.publishedAt, twelveHoursAgo)
+      ));
   }
 
   async createOrUpdateAttendance(sessionId: string, studentId: string, status: AttendanceStatus): Promise<Attendance> {
-    const existingKey = Array.from(this.attendanceRecords.entries()).find(
-      ([, a]) => a.sessionId === sessionId && a.studentId === studentId
-    )?.[0];
+    const [existing] = await db.select().from(attendance)
+      .where(and(eq(attendance.sessionId, sessionId), eq(attendance.studentId, studentId)));
 
-    if (existingKey) {
-      const existing = this.attendanceRecords.get(existingKey)!;
-      existing.status = status;
-      this.attendanceRecords.set(existingKey, existing);
-      return existing;
+    if (existing) {
+      const [updated] = await db.update(attendance)
+        .set({ status })
+        .where(eq(attendance.id, existing.id))
+        .returning();
+      return updated;
     }
 
-    const id = randomUUID();
-    const attendance: Attendance = { id, sessionId, studentId, status };
-    this.attendanceRecords.set(id, attendance);
-    return attendance;
+    const [created] = await db.insert(attendance).values({ sessionId, studentId, status }).returning();
+    return created;
   }
 
   async getAttendanceBySessionId(sessionId: string): Promise<Attendance[]> {
-    return Array.from(this.attendanceRecords.values()).filter((a) => a.sessionId === sessionId);
+    return db.select().from(attendance).where(eq(attendance.sessionId, sessionId));
   }
 
   async bulkUpdateAttendance(sessionId: string, status: AttendanceStatus): Promise<void> {
-    const session = this.sessions.get(sessionId);
+    const [session] = await db.select().from(sessions).where(eq(sessions.id, sessionId));
     if (!session) return;
 
-    const students = await this.getStudentsByBatchId(session.batchId);
-    for (const student of students) {
+    const batchStudents = await db.select().from(students).where(eq(students.batchId, session.batchId));
+    
+    for (const student of batchStudents) {
       await this.createOrUpdateAttendance(sessionId, student.id, status);
     }
   }
 
   async getStats(): Promise<{ totalTeachers: number; totalBatches: number; totalStudents: number; totalSessions: number }> {
+    const [teacherCount] = await db.select({ count: sql<number>`count(*)::int` }).from(teachers);
+    const [batchCount] = await db.select({ count: sql<number>`count(*)::int` }).from(batches);
+    const [studentCount] = await db.select({ count: sql<number>`count(*)::int` }).from(students);
+    const [sessionCount] = await db.select({ count: sql<number>`count(*)::int` }).from(sessions);
+
     return {
-      totalTeachers: this.teachers.size,
-      totalBatches: this.batches.size,
-      totalStudents: this.students.size,
-      totalSessions: this.sessions.size,
+      totalTeachers: teacherCount?.count || 0,
+      totalBatches: batchCount?.count || 0,
+      totalStudents: studentCount?.count || 0,
+      totalSessions: sessionCount?.count || 0,
     };
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

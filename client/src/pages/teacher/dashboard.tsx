@@ -35,6 +35,7 @@ import {
   User,
 } from "lucide-react";
 import { z } from "zod";
+import logoUrl from "@assets/image_1768149327948.png";
 
 export default function TeacherDashboard() {
   const [, setLocation] = useLocation();
@@ -91,8 +92,8 @@ export default function TeacherDashboard() {
       <header className="border-b sticky top-0 z-50 bg-background/95 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <CalendarCheck className="h-6 w-6 text-primary" />
-            <span className="font-bold">TuitionTrack</span>
+            <img src={logoUrl} alt="Agarwal Tutorial" className="h-8 w-auto" />
+            <span className="font-bold hidden sm:block">Agarwal Tutorial</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground hidden md:block">{teacher.name}</span>

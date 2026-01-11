@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { Student } from "@shared/schema";
 import { Users, ArrowLeft, User, ChevronRight } from "lucide-react";
+import logoUrl from "@assets/image_1768149327948.png";
 
 export default function SelectStudent() {
   const [, setLocation] = useLocation();
@@ -42,12 +43,12 @@ export default function SelectStudent() {
       <main className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="mx-auto p-3 rounded-lg bg-primary/10 w-fit mb-4">
-              <Users className="h-8 w-8 text-primary" />
+            <div className="mx-auto w-fit mb-4">
+              <img src={logoUrl} alt="Agarwal Tutorial" className="h-16 w-auto" />
             </div>
-            <CardTitle className="text-2xl">Select a Student</CardTitle>
+            <CardTitle className="text-2xl">Select Student</CardTitle>
             <CardDescription>
-              Multiple students are linked to your mobile number
+              Choose which student to view
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">

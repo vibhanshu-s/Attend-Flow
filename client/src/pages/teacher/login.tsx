@@ -11,6 +11,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import type { Teacher } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { GraduationCap, ArrowLeft, Loader2 } from "lucide-react";
+import logoUrl from "@assets/image_1768149327948.png";
 
 export default function TeacherLogin() {
   const [, setLocation] = useLocation();
@@ -78,12 +79,12 @@ export default function TeacherLogin() {
       <main className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="mx-auto p-3 rounded-lg bg-primary/10 w-fit mb-4">
-              <GraduationCap className="h-8 w-8 text-primary" />
+            <div className="mx-auto w-fit mb-4">
+              <img src={logoUrl} alt="Agarwal Tutorial" className="h-16 w-auto" />
             </div>
             <CardTitle className="text-2xl">Teacher Login</CardTitle>
             <CardDescription>
-              Select your name to access your dashboard
+              Select your name to continue
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -45,6 +45,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { z } from "zod";
+import logoUrl from "@assets/image_1768149327948.png";
 
 type AdminView = "overview" | "teachers" | "batches" | "students";
 
@@ -111,8 +112,8 @@ export default function AdminDashboard() {
         <Sidebar>
           <SidebarHeader className="p-4">
             <div className="flex items-center gap-2">
-              <CalendarCheck className="h-6 w-6 text-primary" />
-              <span className="font-bold">TuitionTrack</span>
+              <img src={logoUrl} alt="Agarwal Tutorial" className="h-8 w-auto" />
+              <span className="font-bold">Agarwal Tutorial</span>
             </div>
           </SidebarHeader>
           <SidebarContent>
