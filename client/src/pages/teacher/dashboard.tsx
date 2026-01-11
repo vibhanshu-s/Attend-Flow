@@ -187,13 +187,17 @@ export default function TeacherDashboard() {
             </TabsContent>
 
             <TabsContent value="attendance" className="space-y-4">
-              {selectedSessionId ? (
+              {selectedSessionId && selectedSession ? (
                 <AttendanceMarkingSection
-                  session={selectedSession!}
+                  session={selectedSession}
                   students={students || []}
                   attendance={sessionAttendance || []}
                   isLoading={isLoadingStudents || isLoadingAttendance}
                 />
+              ) : selectedSessionId ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
               ) : (
                 <Card>
                   <CardContent className="py-12 text-center">
