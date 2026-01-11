@@ -120,7 +120,7 @@ export default function TeacherDashboard() {
                   <SelectItem key={batch.id} value={batch.id}>{batch.name}</SelectItem>
                 ))
               ) : (
-                <SelectItem value="none" disabled>No batches assigned</SelectItem>
+                <SelectItem value="none" disabled>No batches available</SelectItem>
               )}
             </SelectContent>
           </Select>

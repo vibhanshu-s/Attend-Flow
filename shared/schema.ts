@@ -27,7 +27,6 @@ export type Teacher = typeof teachers.$inferSelect;
 export const batches = pgTable("batches", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
-  teacherId: varchar("teacher_id").notNull(),
   description: text("description"),
 });
 
@@ -109,7 +108,6 @@ export interface SessionWithAttendance extends Session {
 }
 
 export interface BatchWithDetails extends Batch {
-  teacher?: Teacher;
   studentCount: number;
   sessionCount: number;
 }

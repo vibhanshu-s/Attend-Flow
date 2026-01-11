@@ -115,7 +115,6 @@ export class DatabaseStorage implements IStorage {
   async createBatch(insertBatch: InsertBatch): Promise<Batch> {
     const [batch] = await db.insert(batches).values({
       name: insertBatch.name,
-      teacherId: insertBatch.teacherId,
       description: insertBatch.description ?? null,
     }).returning();
     return batch;
@@ -132,20 +131,19 @@ export class DatabaseStorage implements IStorage {
 
   async getBatchesWithDetails(): Promise<BatchWithDetails[]> {
     const allBatches = await db.select().from(batches);
-    const allTeachers = await db.select().from(teachers);
     const allStudents = await db.select().from(students);
     const allSessions = await db.select().from(sessions);
 
     return allBatches.map((batch) => {
-      const teacher = allTeachers.find(t => t.id === batch.teacherId);
       const studentCount = allStudents.filter(s => s.batchId === batch.id).length;
       const sessionCount = allSessions.filter(s => s.batchId === batch.id).length;
-      return { ...batch, teacher, studentCount, sessionCount };
+      return { ...batch, studentCount, sessionCount };
     });
   }
 
   async getBatchesByTeacherId(teacherId: string): Promise<Batch[]> {
-    return db.select().from(batches).where(eq(batches.teacherId, teacherId));
+    // Teachers can now work on any batch - return all batches
+    return db.select().from(batches);
   }
 
   async createStudent(insertStudent: InsertStudent): Promise<Student> {

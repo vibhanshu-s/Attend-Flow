@@ -174,7 +174,6 @@ export default function AdminDashboard() {
             {currentView === "batches" && (
               <BatchesSection
                 batches={batches}
-                teachers={teachers}
                 isLoading={isLoadingBatches}
                 onCreateBatch={() => setShowBatchDialog(true)}
               />
@@ -192,7 +191,7 @@ export default function AdminDashboard() {
       </div>
 
       <CreateTeacherDialog open={showTeacherDialog} onOpenChange={setShowTeacherDialog} />
-      <CreateBatchDialog open={showBatchDialog} onOpenChange={setShowBatchDialog} teachers={teachers || []} />
+      <CreateBatchDialog open={showBatchDialog} onOpenChange={setShowBatchDialog} />
       <CreateStudentDialog open={showStudentDialog} onOpenChange={setShowStudentDialog} batches={batches || []} />
     </SidebarProvider>
   );
@@ -325,19 +324,13 @@ function TeachersSection({
 
 function BatchesSection({
   batches,
-  teachers,
   isLoading,
   onCreateBatch,
 }: {
   batches?: BatchWithDetails[];
-  teachers?: Teacher[];
   isLoading: boolean;
   onCreateBatch: () => void;
 }) {
-  const getTeacherName = (teacherId: string) => {
-    return teachers?.find((t) => t.id === teacherId)?.name || "Unknown";
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -366,12 +359,12 @@ function BatchesSection({
               <CardContent className="pt-0">
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
-                    <GraduationCap className="h-4 w-4" />
-                    {getTeacherName(batch.teacherId)}
-                  </div>
-                  <div className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
                     {batch.studentCount} students
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <CalendarCheck className="h-4 w-4" />
+                    {batch.sessionCount} sessions
                   </div>
                 </div>
               </CardContent>
@@ -540,24 +533,20 @@ function CreateTeacherDialog({
 function CreateBatchDialog({
   open,
   onOpenChange,
-  teachers,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  teachers: Teacher[];
 }) {
   const { toast } = useToast();
 
   const batchFormSchema = insertBatchSchema.extend({
     name: z.string().min(1, "Batch name is required"),
-    teacherId: z.string().min(1, "Please select a teacher"),
   });
 
   const form = useForm<InsertBatch>({
     resolver: zodResolver(batchFormSchema),
     defaultValues: {
       name: "",
-      teacherId: "",
       description: "",
     },
   });
@@ -583,7 +572,7 @@ function CreateBatchDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Batch</DialogTitle>
-          <DialogDescription>Create a new class batch</DialogDescription>
+          <DialogDescription>Create a new class batch. Teachers can select batches to work on after logging in.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-4">
@@ -602,30 +591,6 @@ function CreateBatchDialog({
             />
             <FormField
               control={form.control}
-              name="teacherId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Assign Teacher</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger data-testid="select-teacher">
-                        <SelectValue placeholder="Select a teacher" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {teachers.map((teacher) => (
-                        <SelectItem key={teacher.id} value={teacher.id}>
-                          {teacher.name} ({teacher.teacherId})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="description"
               render={({ field }) => (
                 <FormItem>
@@ -637,7 +602,7 @@ function CreateBatchDialog({
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={mutation.isPending || teachers.length === 0} data-testid="button-submit-batch">
+            <Button type="submit" className="w-full" disabled={mutation.isPending} data-testid="button-submit-batch">
               {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Batch
             </Button>
