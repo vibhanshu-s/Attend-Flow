@@ -1,0 +1,481 @@
+Act as a senior full-stack architect and product designer.
+Build a production-grade, mobile-first tuition attendance web application that works seamlessly on mobile and desktop.
+
+Tech Stack (MANDATORY)
+
+Frontend: React + Next.js (latest App Router)
+
+Styling: Tailwind CSS
+
+Backend: Next.js API routes
+
+Database: MongoDB with Mongoose
+
+Roles & Authentication
+Admin
+
+Admin signs up first and becomes system owner
+
+Admin dashboard must allow:
+
+Create teachers
+
+Create batches
+
+Create students
+
+Assign teacher → multiple batches
+
+Assign student → batch
+
+Assign student → guardian mobile number
+
+Admin can edit attendance within 12 hours of publishing
+
+Admin can override locked attendance
+
+Teacher (NO PASSWORD)
+
+Teacher logs in via dropdown selection
+
+Teacher Name + Teacher ID
+
+One teacher can handle multiple batches
+
+Teacher must select a batch before any action
+
+Teacher can:
+
+Create sessions
+
+Mark attendance
+
+Publish attendance
+
+Edit attendance within 12 hours
+
+View batch-wise attendance analytics
+
+Guardian
+
+Guardian logs in using mobile number only
+
+If mobile linked to multiple students, show selection screen
+
+Attendance must always be visible after publishing
+
+Guardian can view:
+
+Attendance percentage
+
+Session-wise attendance heatmap
+
+Read-only access
+
+Attendance & Session Rules
+
+Attendance is session-based
+
+Each session belongs to exactly one batch
+
+Session lifecycle:
+
+DRAFT → PUBLISHED → LOCKED
+
+Editing allowed for 12 hours after publishing
+
+Heatmap UI (MANDATORY)
+
+Use heatmap for attendance visualization
+
+Grid size:
+
+50 blocks
+
+5 rows × 10 columns
+
+1 block = 1 session
+
+Show latest 50 sessions
+
+Colors:
+
+Green → Present
+
+Red → Absent
+
+Grey → Not marked
+
+Tap / click shows date & time
+
+Analytics
+
+Attendance percentage updates immediately
+
+Teacher leaderboard:
+
+No minimum session limit
+
+Ranked by attendance %
+
+Per batch only
+
+Database Requirements
+
+MongoDB with Mongoose
+
+Collections:
+
+Admin
+
+Teacher
+
+Batch
+
+Student
+
+Session
+
+Attendance
+
+Proper indexing and references
+
+Data persistence must be reliable; no data loss
+
+UI / UX
+
+Mobile-first responsive design
+
+Clean dashboards for each role
+
+Clear batch context always visible
+
+Reusable components (especially heatmap)
+
+Simple, seamless navigation
+
+Deliverables
+
+Database schema
+
+API routes
+
+Authentication flow
+
+Frontend pages
+
+Reusable UI components
+
+Scalable folder structure
+
+Build this as a real-world production system, not a demo.
+
+✅ Final Honest Assessment
+
+You’ve:
+
+Simplified login without breaking control
+
+Fixed guardian visibility properly
+
+Made attendance publish-driven
+
+Designed a mobile-first visualization
+
+Kept the system scalable & maintainable
+
+This is exactly how a small-to-medium tuition app should be built.
+
+If you want next, I can:
+
+Design MongoDB schemas
+
+Review generated code
+
+Help you deploy safely (Vercel + Mongo Atlas)
+
+Plan v2 features without breaking v1
+
+Just tell me what you want to do next.
+
+i build the app but I still cant see attendance as guardian and teacher i want to fix that
+also use professional dont use filler words and headings like just use proper naming(Agarwal Tutorial) and update the logo i send, UI should be completely professional
+also fix all the bugs and use permanent database
+the app should be ready to ship and be used by the tuition
+give me singe complete prompt for this
+
+Understood. Below is one single, production-grade prompt, written in strict professional language, with no filler, no casual tone, and explicit instructions to fix the attendance visibility bug, use a permanent database, and prepare the app for real deployment for Agarwal Tutorial.
+
+You can copy-paste this as is into an AI coding tool or give it to a senior developer.
+
+✅ SINGLE COMPLETE SHIP-READY MASTER PROMPT
+
+Act as a senior full-stack engineer, system architect, and UI/UX designer.
+Your task is to fix, harden, and finalize an existing tuition attendance web application so that it is fully functional, professional, bug-free, and ready for real-world deployment for Agarwal Tutorial.
+
+CORE OBJECTIVE
+
+The application currently exists but has critical functional bugs:
+
+Attendance is not visible to guardians
+
+Attendance is not consistently visible to teachers
+
+Your primary responsibility is to:
+
+Identify and fix all data-flow, API, and state-management issues
+
+Ensure attendance is correctly stored, retrieved, and displayed for all roles
+
+Convert the system into a ship-ready production application
+
+TECH STACK (MANDATORY)
+
+Frontend: React + Next.js (latest App Router)
+
+Styling: Tailwind CSS
+
+Backend: Next.js API routes
+
+Database: MongoDB Atlas (persistent, production-grade)
+
+ORM: Mongoose
+
+Hosting-ready (Vercel compatible)
+
+No in-memory storage. No temporary databases. No mock data.
+
+BRANDING & UI REQUIREMENTS
+
+Application name: Agarwal Tutorial
+
+Use the provided logo and update it cleanly across:
+
+Login screens
+
+Dashboards
+
+Navigation bar
+
+UI must be:
+
+Minimal
+
+Professional
+
+Tuition-grade (not startup-flashy, not demo-like)
+
+Mobile-first design is mandatory
+
+Desktop layout must scale naturally
+
+No placeholder text.
+No filler headings.
+No casual language in UI.
+
+ROLES & ACCESS CONTROL
+Admin
+
+Admin signs up first and owns the system
+
+Admin can:
+
+Create teachers
+
+Create batches
+
+Create students
+
+Assign:
+
+One teacher → multiple batches
+
+Student → batch
+
+Student → guardian mobile number
+
+Admin can edit attendance within 12 hours of publishing
+
+Admin can override locked attendance
+
+Teacher (NO PASSWORD)
+
+Teacher logs in via dropdown selection
+
+Teacher Name + Teacher ID
+
+One teacher can manage multiple batches
+
+Teacher must select a batch before any action
+
+Teacher can:
+
+Create sessions
+
+Mark attendance
+
+Publish attendance
+
+Edit attendance within 12 hours
+
+View batch-wise attendance and rankings
+
+Guardian
+
+Guardian logs in using mobile number only
+
+If mobile is linked to multiple students, show selection screen
+
+Guardian must always see attendance after it is published
+
+Guardian access is strictly read-only
+
+ATTENDANCE & SESSION MODEL (CRITICAL)
+
+Attendance is session-based, not daily
+
+Each session belongs to exactly one batch
+
+Session lifecycle:
+
+DRAFT → not visible
+
+PUBLISHED → visible to guardians and teachers
+
+LOCKED → no edits allowed
+
+Editing window:
+
+12 hours after publishing
+
+Applies to teachers and admin
+
+BUG FIX REQUIREMENTS (MANDATORY)
+
+You must:
+
+Fix guardian attendance visibility issues
+
+Fix teacher attendance retrieval issues
+
+Ensure:
+
+Attendance is saved atomically
+
+Session IDs are correctly linked
+
+Guardian queries correctly resolve student → batch → sessions → attendance
+
+Eliminate:
+
+Missing joins
+
+Incorrect filters
+
+State hydration bugs
+
+API response mismatches
+
+Attendance must always appear correctly once published.
+
+HEATMAP UI (FINAL SPECIFICATION)
+
+Attendance must be displayed as a heatmap
+
+Grid size:
+
+50 blocks
+
+5 rows × 10 columns
+
+1 block = 1 session
+
+Colors:
+
+Green → Present
+
+Red → Absent
+
+Grey → Not marked
+
+Tap or click shows:
+
+Session date
+
+Session time
+
+Used by:
+
+Guardians
+
+Teachers (student drill-down)
+
+ANALYTICS
+
+Attendance percentage must:
+
+Update immediately on publishing
+
+Exclude unmarked sessions
+
+Teacher Leaderboard
+
+No minimum session requirement
+
+Ranking based on:
+
+Attendance percentage
+
+Total sessions attended (tie-breaker)
+
+Per batch only
+
+DATABASE REQUIREMENTS (NON-NEGOTIABLE)
+
+MongoDB Atlas with:
+
+Proper schema design
+
+Indexes on:
+
+studentId
+
+batchId
+
+sessionId
+
+guardianMobile
+
+Collections:
+
+Admin
+
+Teacher
+
+Batch
+
+Student
+
+Session
+
+Attendance
+
+No data loss under refresh, reload, or redeploy
+
+FINAL DELIVERABLES
+
+Fixed backend APIs
+
+Reliable MongoDB schema
+
+Correct attendance data flow
+
+Fully functional guardian and teacher views
+
+Professional UI branded as Agarwal Tutorial
+
+Mobile-first, desktop-ready layout
+
+Production-ready application
+
+Build and fix this system as a real tuition product ready to be used immediately, not a prototype.
