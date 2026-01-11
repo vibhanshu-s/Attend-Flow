@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -416,15 +417,32 @@ function AttendanceMarkingSection({
             Mark All Absent
           </Button>
           {session.status === "DRAFT" && (
-            <Button
-              size="sm"
-              onClick={() => finalizeSessionMutation.mutate()}
-              disabled={finalizeSessionMutation.isPending}
-              data-testid="button-finalize-session"
-            >
-              {finalizeSessionMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Finalize Session
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  size="sm"
+                  disabled={finalizeSessionMutation.isPending}
+                  data-testid="button-finalize-session"
+                >
+                  {finalizeSessionMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Finalize Session
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Finalize this session?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Once finalized, attendance can be edited for 12 hours before the session is locked. Make sure all attendance is marked correctly.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => finalizeSessionMutation.mutate()} data-testid="button-confirm-finalize">
+                    Finalize
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
       )}
