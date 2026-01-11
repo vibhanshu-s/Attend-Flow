@@ -337,11 +337,27 @@ function AttendanceMarkingSection({
     mutationFn: async ({ studentId, status }: { studentId: string; status: AttendanceStatus }) => {
       return await apiRequest("POST", `/api/sessions/${session.id}/attendance`, { studentId, status });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/sessions/${session.id}/attendance`] });
+    onMutate: async ({ studentId, status }) => {
+      await queryClient.cancelQueries({ queryKey: [`/api/sessions/${session.id}/attendance`] });
+      const previousAttendance = queryClient.getQueryData<Attendance[]>([`/api/sessions/${session.id}/attendance`]);
+      queryClient.setQueryData<Attendance[]>([`/api/sessions/${session.id}/attendance`], (old) => {
+        if (!old) return [{ id: 'temp', sessionId: session.id, studentId, status }];
+        const exists = old.find(a => a.studentId === studentId);
+        if (exists) {
+          return old.map(a => a.studentId === studentId ? { ...a, status } : a);
+        }
+        return [...old, { id: 'temp', sessionId: session.id, studentId, status }];
+      });
+      return { previousAttendance };
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _variables, context) => {
+      if (context?.previousAttendance) {
+        queryClient.setQueryData([`/api/sessions/${session.id}/attendance`], context.previousAttendance);
+      }
       toast({ title: "Failed to mark attendance", description: error.message, variant: "destructive" });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/sessions/${session.id}/attendance`] });
     },
   });
 
@@ -466,7 +482,7 @@ function AttendanceMarkingSection({
                   studentId={student.id}
                   status={getStudentAttendance(student.id)}
                   onStatusChange={(status) => markAttendanceMutation.mutate({ studentId: student.id, status })}
-                  disabled={markAttendanceMutation.isPending}
+                  disabled={false}
                 />
               </div>
             ))}
