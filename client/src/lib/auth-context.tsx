@@ -37,9 +37,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { role: null, admin: null, teacher: null, guardianMobile: null, selectedStudent: null };
   });
 
-  const updateState = (newState: AuthState) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
-    setState(newState);
+  const updateState = (updater: AuthState | ((prev: AuthState) => AuthState)) => {
+    setState(prev => {
+      const newState = typeof updater === 'function' ? updater(prev) : updater;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
   };
 
   const loginAsAdmin = (admin: Admin) => {
@@ -55,8 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const selectStudent = (student: Student) => {
-    const newState = { ...state, selectedStudent: student };
-    updateState(newState);
+    updateState(prev => ({ ...prev, selectedStudent: student }));
   };
 
   const logout = () => {

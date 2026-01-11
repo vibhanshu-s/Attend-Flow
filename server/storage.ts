@@ -1,4 +1,4 @@
-import { eq, and, ne, lt, desc, sql } from "drizzle-orm";
+import { eq, and, ne, lt, desc, inArray, sql } from "drizzle-orm";
 import { db } from "./db";
 import {
   admins,
@@ -182,7 +182,7 @@ export class DatabaseStorage implements IStorage {
       studentAttendance = await db.select().from(attendance)
         .where(and(
           eq(attendance.studentId, studentId),
-          sql`${attendance.sessionId} = ANY(${sessionIds})`
+          inArray(attendance.sessionId, sessionIds)
         ));
     }
 
@@ -203,7 +203,7 @@ export class DatabaseStorage implements IStorage {
     let allAttendance: Attendance[] = [];
     if (sessionIds.length > 0) {
       allAttendance = await db.select().from(attendance)
-        .where(sql`${attendance.sessionId} = ANY(${sessionIds})`);
+        .where(inArray(attendance.sessionId, sessionIds));
     }
 
     return batchStudents.map(student => {
@@ -231,7 +231,7 @@ export class DatabaseStorage implements IStorage {
       studentAttendance = await db.select().from(attendance)
         .where(and(
           eq(attendance.studentId, studentId),
-          sql`${attendance.sessionId} = ANY(${sessionIds})`
+          inArray(attendance.sessionId, sessionIds)
         ));
     }
 

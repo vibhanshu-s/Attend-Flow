@@ -341,6 +341,8 @@ function AttendanceMarkingSection({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/batches/${session.batchId}/sessions`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/batches/${session.batchId}/analytics`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/sessions/${session.id}/attendance`] });
       toast({ title: "Session finalized successfully" });
     },
     onError: (error: Error) => {

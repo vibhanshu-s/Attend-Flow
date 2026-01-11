@@ -41,13 +41,10 @@ export default function GuardianLogin() {
           title: "Login successful",
           description: `Viewing attendance for ${data.students[0].name}`,
         });
-        setTimeout(() => {
-          setLocation("/guardian/dashboard");
-        }, 50);
+        // Use setTimeout to allow React state update to complete before navigation
+        setTimeout(() => setLocation("/guardian/dashboard"), 100);
       } else if (data.students.length > 1) {
-        setTimeout(() => {
-          setLocation("/guardian/select-student");
-        }, 50);
+        setTimeout(() => setLocation("/guardian/select-student"), 100);
       } else {
         toast({
           title: "No students found",
